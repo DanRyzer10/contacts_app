@@ -1,11 +1,25 @@
-<pre>
+
 <?php
-  if($_SERVER["REQUEST_METHOD"]=="POST"){
-    var_dump($_POST);
-    die();
+   if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $contact = [
+      "name" => $_POST["name"],
+      "phone_number" => $_POST["phone_number"],
+    ];
+
+
+    if (file_exists("contacts.json")) {
+      $contacts = json_decode(file_get_contents("contacts.json"), true);
+    } else {
+      $contacts = [];
+    }
+
+    $contacts[] = $contact;
+
+    file_put_contents("contacts.json", json_encode($contacts));
+
+    header("Location: index.php");
   }
 ?>
-</pre>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,7 +71,7 @@
             <a class="nav-link" href="./index.html">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./add.html">Add Contact</a>
+            <a class="nav-link" href="./add.php">Add Contact</a>
           </li>
         </ul>
       </div>
