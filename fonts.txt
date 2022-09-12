@@ -1,2 +1,0 @@
-JetBrains Mono NL
-mononoki Nerd Font Mono
