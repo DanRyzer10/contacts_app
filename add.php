@@ -1,6 +1,11 @@
 
 <?php 
   require "database.php";
+  if (!isset($_SESSION['user'])) {
+    header('Location: loggin.php');
+    return;
+  }
+
   $error= null;
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["name"]) || empty($_POST["phone_number"])) {

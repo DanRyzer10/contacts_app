@@ -1,29 +1,41 @@
+<?php
 
-<?php 
   require "database.php";
-  $error= null;
+
+  $error = null;
+
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["name"]) || empty($_POST["email"]) || empty($_POST["password"])) {
-      $error = "please fill all the fields. ";
+      $error = "Please fill all the fileds.";
+    } else if (!str_contains($_POST["email"], "@")) {
+      $error = "Email format is incorrect.";
     } else {
-      $statement= $conn->prepare("SELECT * FROM user WHERE email= :email");
-      $statement->bindParam(':email', $_POST['email']);
+      $statement = $conn->prepare("SELECT * FROM user WHERE email = :email");
+      $statement->bindParam(":email", $_POST["email"]);
       $statement->execute();
-      if($statement->rowCount()>0){
-        $error= "this email is taken";
-      
-      } else{
+
+      if ($statement->rowCount() > 0) {
+        $error = "This email is taken.";
+      } else {
         $conn
-        ->prepare("INSERT INTO user (username, email, password) VALUES (:name, :email, :password)")
-        ->execute([
-          ':name' => $_POST['name'],
-          ':email' => $_POST['email'],
-          ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT)
-        ]);
-        header("Location: home.php");
+          ->prepare("INSERT INTO user (username, email, password) VALUES (:name, :email, :password)")
+          ->execute([
+            ":name" => $_POST["name"],
+            ":email" => $_POST["email"],
+            ":password" => password_hash($_POST["password"], PASSWORD_BCRYPT),
+          ]);
+
+          $statement = $conn->prepare("SELECT * FROM user WHERE email = :email LIMIT 1");
+          $statement->bindParam(":email", $_POST["email"]);
+          $statement->execute();
+          $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+          session_start();
+          $_SESSION["user"] = $user;
+
+          header("Location: home.php");
       }
     }
-    
   }
 ?>
 <?php require "partials/header.php" ?>
