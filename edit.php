@@ -1,6 +1,7 @@
 
 <?php
   require "database.php";
+  session_start();
   $id = $_GET["id"];
   $statement = $conn->prepare("SELECT * FROM contacts WHERE id = :id LIMIT 1");
   $statement->execute([":id" => $id]);
@@ -24,8 +25,9 @@
         ":phone_number" => $_POST["phone_number"],
         ":id" => $id
       ]);
-      
+      $_SESSION["flash"] = ["message" => "Contact {$_POST['name']} updated."];
       header("Location: home.php");
+      return;
       
     }
     
